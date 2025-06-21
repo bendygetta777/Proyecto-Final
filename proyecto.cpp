@@ -355,5 +355,58 @@ int main()
             opcion = mostrarMenu();
         }
     cout << "\nGracias por jugar!\n";
+    inicializarMazo(mazo);
+    mezclarMazo(mazo);
+    separarCartas(mazo);
+    int indiceMazo = 0;
+    Jugador jugador = { {}, 0, 0 };
+    Jugador banca = { {}, 0, 0 };
+    repartirCartas(mazo, indiceMazo, jugador);
+    repartirCartas(mazo, indiceMazo, banca);
+    repartirCartas(mazo, indiceMazo, jugador);
+    repartirCartas(mazo, indiceMazo, banca);
+    jugador.puntaje = calcularPuntaje(jugador);
+    banca.puntaje = calcularPuntaje(banca);
+    mostrarMano(jugador, "Jugador");
+    mostrarMano(banca, "Banca", true, false);
+    char opcion;
+    bool turnoJugador = true;
+    bool jugadorPasado = false;
+    while (turnoJugador && jugador.puntaje <= 21)
+    {
+        cout << "Quieres pedir carta (H) o plantarte (S)? ";
+        cin >> opcion;
+        if (opcion == 'H' || opcion == 'h')
+        {
+            repartirCartas(mazo, indiceMazo, jugador);
+            jugador.puntaje = calcularPuntaje(jugador);
+            mostrarMano(jugador, "Jugador");
+            if (jugador.puntaje > 21)
+            {
+                cout << "Te has pasado de 21. Perdiste." << endl;
+                turnoJugador = false;
+                jugadorPasado = true;
+            } else if (jugador.puntaje == 21)
+            {
+                cout << "Has alcanzado 21! Te plantas automaticamente." << endl;
+                turnoJugador = false;
+            }
+        }
+        else if (opcion == 'S' || opcion == 's')
+        {
+            cout << "Te plantas con puntaje: " << jugador.puntaje << endl;
+            turnoJugador = false;
+            mostrarMano(banca, "Banca", false, true);
+        }
+        else
+        {
+            cout << "Opcion invalida. Por favor ingresa H o S." << endl;
+        }
+    }
+    if (!jugadorPasado)
+    {
+       turnoBanca(mazo, indiceMazo, banca);
+    }
+    determinarGanador(jugador, banca);
     return 0;
 }
